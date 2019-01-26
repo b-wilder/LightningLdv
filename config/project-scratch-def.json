@@ -1,7 +1,14 @@
 {
     "orgName": "Brock W. Elgart",
+    "username": "brock.elgart@lightningldv.scratchdev1",
     "edition": "Developer",
     "orgPreferences" : {
         "enabled": ["S1DesktopEnabled"]
-    }
+    },
+    "features" : [
+        "API", 
+        "AuthorApex",
+        "DebugApex",
+        "ForceComPlatform"
+    ]
 }

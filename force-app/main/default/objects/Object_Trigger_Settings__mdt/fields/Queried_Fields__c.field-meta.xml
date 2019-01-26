@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Queried_Fields__c</fullName>
+    <description>Defines all fields that are needed for the Lightning LDV trigger to process (enter as a comma separated list with no spaces). These will need to be queried, since the business logic will run as a batch process.</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <label>Queried Fields</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

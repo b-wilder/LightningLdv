@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Define trigger settings that apply to all Lightning LDV triggers, such as regular maintenance hours and ad hoc disabling of all triggers</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Global Trigger Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

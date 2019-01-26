@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Blackout_Period_Start__c</fullName>
+    <description>Defines the beginning of a blackout period, during which all LDV trigger processing is disabled except for that which is required to enable later batch processing of that data. The Date portion of this field is relevant, unlike the maintenance window fields.</description>
+    <externalId>false</externalId>
+    <label>Blackout Period Start</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

@@ -1,2 +1,14 @@
-# LightningLdv
-A trigger framework designed for large data volume considerations on the Salesforce Lightning Platform.
+# SFDX  App
+
+## Dev, Build and Test
+
+
+## Resources
+
+
+## Description of Files and Directories
+
+
+## Issues
+
+

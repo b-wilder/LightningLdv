@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Run_After_Deletes__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Run the onAfterDelete method for this Lightning LDV trigger, which is equivalent to the AfterDelete context of a standard apex trigger (a Lightning LDV trigger is really a batch process that is scheduled from a trigger)</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <label>Run After Deletes</label>
+    <type>Checkbox</type>
+</CustomField>

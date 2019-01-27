@@ -1,5 +1,5 @@
 public with sharing class Utilities {
-    public static Enum TriggerContext{
+    public Enum TriggerContext{
         AfterInsert,
         AfterUpdate,
         AfterDelete,
@@ -10,7 +10,7 @@ public with sharing class Utilities {
         return csv.replaceAll(' ','').split(',');
     }
 
-    public class MetadataCallback implements Metadata.Metadata.DeployCallback{
+    public class MetadataCallback implements Metadata.DeployCallback{
         public void handleResult(   Metadata.DeployResult result,
                                     Metadata.DeployCallbackContext context) {
             if (result.status == Metadata.DeployStatus.Succeeded) {

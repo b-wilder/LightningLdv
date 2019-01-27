@@ -15,7 +15,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
                                         WHERE DeveloperName = 'objectApiName'
         ].get(0);
 
-        String TriggerHandler = objectApiName.replaceEnd('__c','').replaceAll('_', '') + '_LdvHandler';
+        String TriggerHandler = objectApiName.replace('__c','').replace('_', '') + '_LdvHandler';
         Type t = Type.forName(TriggerHandler);
         this.ldvHandler = (TriggerHandlerInterface)t.newInstance();
 
@@ -27,7 +27,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
     }
     
     private String buildSelectString(){
-        set<String> selectValues = new list<String>{'Id','CreatedDate','SystemModStamp','IsDeleted'};
+        set<String> selectValues = new set<String>{'Id','CreatedDate','SystemModStamp','IsDeleted'};
 
         //Add "Update Field" to query if relevant
         if( !String.isBlank(this.objectTriggerSettings.Update_Field__c) &&
@@ -54,19 +54,19 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
     private String buildWhereString(){
         String returnVal = 'WHERE';
         switch on this.triggerContext{
-            when Utilities.TriggerContext.AfterInsert {
+            when AfterInsert {
                 returnVal += ' CreatedDate >= ' + this.objectTriggerSettings.Last_Run_Time__c;
             }
-            when Utilities.TriggerContext.AfterUpdate {
+            when AfterUpdate {
                 returnVal += ' SystemModStamp >= ' + this.objectTriggerSettings.Last_Run_Time__c;
                 returnVal += ' AND CreatedDate < ' + this.objectTriggerSettings.Last_Run_Time__c;
                 returnVal += ' AND ' + this.objectTriggerSettings.Update_Field__c + ' = true';
             }
-            when Utilities.TriggerContext.AfterDelete {
+            when AfterDelete {
                 returnVal += ' SystemModStamp >= ' + this.objectTriggerSettings.Last_Run_Time__c + ' ';
                 returnVal += ' AND isDeleted = true ALL ROWS';
             }
-            when Utilities.TriggerContext.AfterUndelete {
+            when AfterUndelete {
                 returnVal += ' SystemModStamp >= ' + this.objectTriggerSettings.Last_Run_Time__c;
                 returnVal += ' AND CreatedDate < ' + this.objectTriggerSettings.Last_Run_Time__c;
                 returnVal += ' AND ' + this.objectTriggerSettings.Update_Field__c + ' = false';
@@ -76,7 +76,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
         return returnVal;
     }
 
-    global Database.QueryLocator start(Database.BatchableContext BC){
+    public Database.QueryLocator start(Database.BatchableContext BC){
         // Track Last Run Time as of start time of batch, but do not update it until the batch succeeds
         this.lastRunTime = DateTime.now();
 
@@ -87,21 +87,21 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
         return Database.getQueryLocator(queryString);
     }
 
-    global void execute(Database.BatchableContext BC, List<sObject> scope){
+    public void execute(Database.BatchableContext BC, List<sObject> scope){
         map<Id,sObject> scopeMap = new map<Id,sObject>(scope);
         
         //Execute the handler class that implements LightningLdv__TriggerHandlerInterface
         switch on this.triggerContext{
-            when Utilities.TriggerContext.AfterInsert {
+            when AfterInsert {
                 this.ldvHandler.onAfterInsert(scopeMap);
             }
-            when Utilities.TriggerContext.AfterUpdate {
+            when AfterUpdate {
                 this.ldvHandler.onAfterUpdate(scopeMap);
             }
-            when Utilities.TriggerContext.AfterDelete {
+            when AfterDelete {
                 this.ldvHandler.onAfterDelete(scopeMap);
             }
-            when Utilities.TriggerContext.AfterUndelete {
+            when AfterUndelete {
                 this.ldvHandler.onAfterUndelete(scopeMap);
             }
             when else {
@@ -110,7 +110,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
         }
     }
 
-    global void finish(Database.BatchableContext BC){
+    public void finish(Database.BatchableContext BC){
         //Updates the Last Run Time with the value tracked in the start method now that the batch has succeeded.
         setLastRunDate();
     }
@@ -135,7 +135,9 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
 
         // Enqueue custom metadata deployment
         // jobId is the deployment ID
+        /* this isn't working, and I realized I should use a custom setting anyways, so I'm commenting it out
         Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
         System.debug('jobId for LightningLdv__Object_Trigger_Settings__mdt deployment: ' + jobId);
+        */
     }
 }

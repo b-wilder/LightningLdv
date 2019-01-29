@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>List</customSettingsType>
+    <description>Tracks object-based data for Lightning LDV triggers such as Last Run Time.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Object Trigger Data</label>
+    <visibility>Public</visibility>
+</CustomObject>

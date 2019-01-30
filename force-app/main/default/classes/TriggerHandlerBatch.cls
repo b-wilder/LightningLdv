@@ -112,7 +112,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
             ){
                 afterUndeleteMap.put(recordId, recordObj);
             }
-        } //End of Loop through scope
+        } //End of loop through scope
 
         //Run Lightning LDV trigger handler
         if(!afterInsertMap.isEmpty()){

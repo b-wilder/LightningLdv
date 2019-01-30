@@ -14,7 +14,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
                                             Run_After_Inserts__c, Run_After_Updates__c,
                                             Run_After_Deletes__c, Run_After_Undeletes__c
                                         FROM Object_Trigger_Settings__mdt
-                                        WHERE DeveloperName = 'objectApiName'
+                                        WHERE DeveloperName = :objectApiName
         ].get(0);
         this.objectTriggerData = getObjectTriggerData(objectApiName);
 

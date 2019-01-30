@@ -76,9 +76,9 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
 
     public void execute(Database.BatchableContext BC, List<sObject> scope){
         map<Id,sObject> afterInsertMap = new map<Id,sObject>();
-        map<Id,sObject> afterUpdateMap = new Map<Id,sObject>();
+        map<Id,sObject> afterUpdateMap = new map<Id,sObject>();
         map<Id,sObject> afterDeleteMap = new map<Id,sObject>();
-        map<Id,sObject> afterUndeleteMap = new Map<Id,sObject>();
+        map<Id,sObject> afterUndeleteMap = new map<Id,sObject>();
         
         for(sObject recordObj : scope){
             Id recordId = ((Id)recordObj.get('Id'));

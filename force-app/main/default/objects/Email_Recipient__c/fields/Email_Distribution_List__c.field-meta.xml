@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Email_Distribution_List__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Used in the test code for the LightningLdv package</description>
+    <externalId>false</externalId>
+    <label>Email Distribution List</label>
+    <referenceTo>Email_Distribution_List__c</referenceTo>
+    <relationshipLabel>Email Recipients</relationshipLabel>
+    <relationshipName>Email_Recipients</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

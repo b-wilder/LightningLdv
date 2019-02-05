@@ -14,9 +14,19 @@
     </classAccesses>
     <custom>false</custom>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Object_Trigger_Settings__mdt.Last_Run_Time__c</field>
-        <readable>false</readable>
+        <editable>true</editable>
+        <field>Email_Distribution_List__c.Recipients__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Email_Recipient__c.Email_Distribution_List__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Email_Recipient__c.Email__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
@@ -54,8 +64,32 @@
         <readable>false</readable>
     </fieldPermissions>
     <layoutAssignments>
+        <layout>Email_Distribution_List__c-Email Distribution List Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Email_Recipient__c-Email Recipient Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
         <layout>Object_Trigger_Settings__mdt-Object Trigger Settings Layout</layout>
     </layoutAssignments>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Email_Distribution_List__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Email_Recipient__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <userLicense>Salesforce</userLicense>
     <userPermissions>
         <enabled>true</enabled>

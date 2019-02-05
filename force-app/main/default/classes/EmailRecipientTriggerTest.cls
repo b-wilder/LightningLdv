@@ -1,8 +1,10 @@
 @IsTest private class EmailRecipientTriggerTest {
+    private static String MARKETING_LIST = 'Marketing Distribution List';
+    private static String SALES_LIST = 'Sales Distribution List';
 
     @TestSetup private static void commonSetup(){
-        Email_Distribution_List__c ed1 = new Email_Distribution_List__c(name='Marketing Distribution List');
-        Email_Distribution_List__c ed2 = new Email_Distribution_List__c(name='Sales Distribution List');
+        Email_Distribution_List__c ed1 = new Email_Distribution_List__c(name=MARKETING_LIST);
+        Email_Distribution_List__c ed2 = new Email_Distribution_List__c(name=SALES_LIST);
         list<Email_Distribution_List__c> emailDistributionLists = new list<Email_Distribution_List__c>{ed1,ed2};
         insert emailDistributionLists;
 
@@ -26,15 +28,6 @@
             emailRecipients.add(er2);
         }
         insert emailRecipients;
-
-        Integer edlCount = (Integer)[Select count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
-        System.assertEquals(edlCount,2);
-
-        Integer marketingRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__c = :ed1.Id].get(0).get('countVal');
-        System.assertEquals(marketingRecipientsCount,3);
-
-        Integer salesRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__c = :ed2.Id].get(0).get('countVal');
-        System.assertEquals(salesRecipientsCount,3);
     }
 
     private static String getRecipientName(String prefix, Integer i){
@@ -45,7 +38,18 @@
         return name.replace(' ','') + '@test.com';
     }
 
+    private static void validateTestSetup(){
+        Integer edlCount = (Integer)[Select count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
+        System.assertEquals(edlCount,2);
+
+        Integer marketingRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :MARKETING_LIST].get(0).get('countVal');
+        System.assertEquals(marketingRecipientsCount,3);
+
+        Integer salesRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :SALES_LIST].get(0).get('countVal');
+        System.assertEquals(salesRecipientsCount,3);
+    }
+
     private static testMethod void testInserts(){
-        System.assert(true); //stub for test method
+        validateTestSetup();
     }
 }

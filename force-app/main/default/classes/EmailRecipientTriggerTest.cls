@@ -2,7 +2,7 @@
     private static String MARKETING_LIST = 'Marketing Distribution List';
     private static String SALES_LIST = 'Sales Distribution List';
 
-    @TestSetup private static void commonSetup(){
+    private static void commonSetup(){
         Email_Distribution_List__c ed1 = new Email_Distribution_List__c(name=MARKETING_LIST);
         Email_Distribution_List__c ed2 = new Email_Distribution_List__c(name=SALES_LIST);
         list<Email_Distribution_List__c> emailDistributionLists = new list<Email_Distribution_List__c>{ed1,ed2};
@@ -39,17 +39,56 @@
     }
 
     private static void validateTestSetup(){
-        Integer edlCount = (Integer)[Select count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
+        Integer edlCount = (Integer)[SELECT count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
         System.assertEquals(edlCount,2);
 
-        Integer marketingRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :MARKETING_LIST].get(0).get('countVal');
+        Integer marketingRecipientsCount = (Integer)[SELECT count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :MARKETING_LIST].get(0).get('countVal');
         System.assertEquals(marketingRecipientsCount,3);
 
-        Integer salesRecipientsCount = (Integer)[Select count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :SALES_LIST].get(0).get('countVal');
+        Integer salesRecipientsCount = (Integer)[SELECT count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :SALES_LIST].get(0).get('countVal');
         System.assertEquals(salesRecipientsCount,3);
     }
 
     private static testMethod void testInserts(){
-        validateTestSetup();
+        Test.startTest();
+            commonSetup();
+            validateTestSetup();
+        Test.stopTest();
+
+        validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient2@test.com','MarketingRecipient3@test.com'});
+        validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
+    }
+
+    private static testMethod void testUpdates(){
+        Test.startTest();
+            commonSetup();
+            validateTestSetup();
+
+            Email_Recipient__c er1 = [Select Id FROM Email_Recipient__c WHERE Email__c = 'MarketingRecipient2@test.com'];
+            er1.Email__c = 'MarketingLeader2@test.com';
+
+            Email_Recipient__c er2 = [Select Id FROM Email_Recipient__c WHERE Email__c = 'SalesRecipient2@test.com'];
+            er2.Email__c = 'SalesLeader2@test.com';
+
+            Email_Recipient__c er3 = [Select Id, Email__c FROM Email_Recipient__c WHERE Email__c = 'SalesRecipient3@test.com'];
+            er3.Email_Distribution_List__c = [Select Id FROM Email_Distribution_List__c WHERE Name = :MARKETING_LIST].get(0).Id;
+            er3.Email__c = 'Former' + er3.Email__c;
+
+            update new list<Email_Recipient__c>{er1,er2,er3};
+        Test.stopTest();
+
+        validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingLeader2@test.com','MarketingRecipient3@test.com','FormerSalesRecipient3@test.com'});
+        validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesLeader2@test.com'});
+    }
+
+    private static void validateDistributionList(String edlName, set<String> expectedValues){
+        Email_Distribution_List__c edl = [SELECT Recipients__c FROM Email_Distribution_List__c WHERE Name = :edlName].get(0);
+        set<String> actualValues = new set<String>();
+        if(edl.Recipients__c != null){
+            actualValues.addAll(edl.Recipients__c.split(','));
+        }
+        String errorMsg = 'Unexpected Recipients__c value for ' + edlName + ': \"' + edl.Recipients__c + '\".';
+        errorMsg += ' Expected value was \"' + String.join(new list<String>(expectedValues), ',') + '\".';
+        System.assert(expectedValues.equals(actualValues), errorMsg);
     }
 }

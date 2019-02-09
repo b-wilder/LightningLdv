@@ -3,23 +3,43 @@
     private static String SALES_LIST = 'Sales Distribution List';
 
     private static Global_Trigger_Settings__c commonConfig(){
-      Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        Date maintenanceDay = Date.Today();
+        DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(1, 0, 0, 0));
+        DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(4, 0, 0, 0));
+        
+        Date blackoutDay = Date.Today();
+        DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
+        DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
 
-      Date maintenanceDay = Date.Today();
-      DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(1, 0, 0, 0));
-      DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(4, 0, 0, 0));
-      
-      Date blackoutDay = Date.Today().addDays(1);
-      DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
-      DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
-
-      orgDefaults.Maintenance_Window_Start__c = maintenanceStartDateTime;
-      orgDefaults.Maintenance_Window_End__c = maintenanceEndDateTime;
-      orgDefaults.Blackout_Period_Start__c = blackoutStartDateTime;
-      orgDefaults.Blackout_Period_End__c = blackoutEndDateTime;
-      return orgDefaults;
-
+        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime);
     }
+
+
+    private static Global_Trigger_Settings__c altMaintenanceConfig(){ //maintnenance period crosses from one day to the next
+        Date maintenanceDay = Date.Today();
+        DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(23, 0, 0, 0));
+        DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay.addDays(1), Time.newInstance(2, 0, 0, 0));
+        
+        Date blackoutDay = Date.Today();
+        DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
+        DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
+
+        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime);
+    }
+    
+
+    private static Global_Trigger_Settings__c getGlobalTriggerSettings(
+        DateTime maintenanceStartDateTime, DateTime maintenanceEndDateTime,
+        DateTime blackoutStartDateTime, DateTime blackoutEndDateTime
+    ) {
+        Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        orgDefaults.Maintenance_Window_Start__c = maintenanceStartDateTime;
+        orgDefaults.Maintenance_Window_End__c = maintenanceEndDateTime;
+        orgDefaults.Blackout_Period_Start__c = blackoutStartDateTime;
+        orgDefaults.Blackout_Period_End__c = blackoutEndDateTime;
+        return orgDefaults;
+    }
+
 
     private static void commonSetup(Global_Trigger_Settings__c orgDefaults){
         insert orgDefaults;
@@ -51,13 +71,16 @@
         insert emailRecipients;
     }
 
+
     private static String getRecipientName(String prefix, Integer i){
         return prefix + ' Recipient ' + String.valueOf(i);
     }
 
+
     private static String getRecipientEmail(String name){
         return name.replace(' ','') + '@test.com';
     }
+
 
     private static void validateTestSetup(){
         Integer edlCount = (Integer)[SELECT count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
@@ -69,6 +92,7 @@
         Integer salesRecipientsCount = (Integer)[SELECT count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :SALES_LIST].get(0).get('countVal');
         System.assertEquals(salesRecipientsCount,3);
     }
+    
 
     private static testMethod void testInsert(){
         Test.startTest();
@@ -79,6 +103,7 @@
         validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient2@test.com','MarketingRecipient3@test.com'});
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
     }
+
 
     private static testMethod void testUpdate(){
         Test.startTest();
@@ -102,6 +127,7 @@
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesLeader2@test.com'});
     }
 
+
     private static testMethod void testDelete(){
         Test.startTest();
             commonSetup(commonConfig());
@@ -114,6 +140,7 @@
         validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient3@test.com'});
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient3@test.com'});
     }
+
 
      private static testMethod void testUndelete(){
         Test.startTest();
@@ -130,6 +157,7 @@
         validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient3@test.com'});
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
     }
+
 
      private static void validateDistributionList(String edlName, set<String> expectedValues){
         Email_Distribution_List__c edl = [SELECT Recipients__c FROM Email_Distribution_List__c WHERE Name = :edlName].get(0);

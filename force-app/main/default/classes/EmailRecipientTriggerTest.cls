@@ -2,7 +2,28 @@
     private static String MARKETING_LIST = 'Marketing Distribution List';
     private static String SALES_LIST = 'Sales Distribution List';
 
-    private static void commonSetup(){
+    private static Global_Trigger_Settings__c commonConfig(){
+      Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+
+      Date maintenanceDay = Date.Today();
+      DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(1, 0, 0, 0));
+      DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(4, 0, 0, 0));
+      
+      Date blackoutDay = Date.Today().addDays(1);
+      DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
+      DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
+
+      orgDefaults.Maintenance_Window_Start__c = maintenanceStartDateTime;
+      orgDefaults.Maintenance_Window_End__c = maintenanceEndDateTime;
+      orgDefaults.Blackout_Period_Start__c = blackoutStartDateTime;
+      orgDefaults.Blackout_Period_End__c = blackoutEndDateTime;
+      return orgDefaults;
+
+    }
+
+    private static void commonSetup(Global_Trigger_Settings__c orgDefaults){
+        insert orgDefaults;
+
         Email_Distribution_List__c ed1 = new Email_Distribution_List__c(name=MARKETING_LIST);
         Email_Distribution_List__c ed2 = new Email_Distribution_List__c(name=SALES_LIST);
         list<Email_Distribution_List__c> emailDistributionLists = new list<Email_Distribution_List__c>{ed1,ed2};
@@ -51,7 +72,7 @@
 
     private static testMethod void testInsert(){
         Test.startTest();
-            commonSetup();
+            commonSetup(commonConfig());
             validateTestSetup();
         Test.stopTest();
 
@@ -61,7 +82,7 @@
 
     private static testMethod void testUpdate(){
         Test.startTest();
-            commonSetup();
+            commonSetup(commonConfig());
             validateTestSetup();
 
             Email_Recipient__c er1 = [Select Id FROM Email_Recipient__c WHERE Email__c = 'MarketingRecipient2@test.com'];
@@ -83,7 +104,7 @@
 
     private static testMethod void testDelete(){
         Test.startTest();
-            commonSetup();
+            commonSetup(commonConfig());
             validateTestSetup();
 
             list<Email_Recipient__c> ers = [SELECt Id FROM Email_Recipient__c WHERE Email__c like '%2@test.com'];
@@ -96,7 +117,7 @@
 
      private static testMethod void testUndelete(){
         Test.startTest();
-            commonSetup();
+            commonSetup(commonConfig());
             validateTestSetup();
 
             list<Email_Recipient__c> ers = [SELECt Id FROM Email_Recipient__c WHERE Email__c like '%2@test.com'];

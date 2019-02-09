@@ -49,7 +49,7 @@
         System.assertEquals(salesRecipientsCount,3);
     }
 
-    private static testMethod void testInserts(){
+    private static testMethod void testInsert(){
         Test.startTest();
             commonSetup();
             validateTestSetup();
@@ -59,7 +59,7 @@
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
     }
 
-    private static testMethod void testUpdates(){
+    private static testMethod void testUpdate(){
         Test.startTest();
             commonSetup();
             validateTestSetup();
@@ -81,7 +81,36 @@
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesLeader2@test.com'});
     }
 
-    private static void validateDistributionList(String edlName, set<String> expectedValues){
+    private static testMethod void testDelete(){
+        Test.startTest();
+            commonSetup();
+            validateTestSetup();
+
+            list<Email_Recipient__c> ers = [SELECt Id FROM Email_Recipient__c WHERE Email__c like '%2@test.com'];
+            delete ers;
+        Test.stopTest();
+
+        validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient3@test.com'});
+        validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient3@test.com'});
+    }
+
+     private static testMethod void testUndelete(){
+        Test.startTest();
+            commonSetup();
+            validateTestSetup();
+
+            list<Email_Recipient__c> ers = [SELECt Id FROM Email_Recipient__c WHERE Email__c like '%2@test.com'];
+            delete ers;
+            
+            Email_Recipient__c er = [SELECT Id FROM EmaiL_Recipient__c WHERE Email__c = 'SalesRecipient2@test.com' AND IsDeleted = true ALL ROWS];
+            undelete er;
+        Test.stopTest();
+
+        validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient3@test.com'});
+        validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
+    }
+
+     private static void validateDistributionList(String edlName, set<String> expectedValues){
         Email_Distribution_List__c edl = [SELECT Recipients__c FROM Email_Distribution_List__c WHERE Name = :edlName].get(0);
         set<String> actualValues = new set<String>();
         if(edl.Recipients__c != null){

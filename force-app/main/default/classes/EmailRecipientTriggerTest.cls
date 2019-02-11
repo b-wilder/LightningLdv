@@ -92,7 +92,7 @@
         Integer salesRecipientsCount = (Integer)[SELECT count(Id) countVal FROM Email_Recipient__c WHERE Email_Distribution_List__r.Name = :SALES_LIST].get(0).get('countVal');
         System.assertEquals(salesRecipientsCount,3);
     }
-    
+
 
     private static testMethod void testInsert(){
         Test.startTest();
@@ -156,6 +156,15 @@
 
         validateDistributionList(MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient3@test.com'});
         validateDistributionList(SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
+    }
+
+
+    private static testMethod void testSingleDayMaintenancePeriod(){
+        Test.startTest();
+            Utilities.testDateTime = DateTime.newInstance(Date.Today(), Time.newInstance(2, 0, 0, 0));
+            commonSetup(commonConfig());
+
+        Test.stopTest();
     }
 
 

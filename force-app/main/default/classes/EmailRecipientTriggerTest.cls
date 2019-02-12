@@ -203,6 +203,47 @@
         Test.stopTest();
     }
 
+    //Maintenance period is a few consecutive hours that crosses from one day to the next
+    //Lightning LDV trigger is fired outside the maintenance period
+    private static testMethod void testOutideCrossDayMaintenancePeriod(){
+        Test.startTest();
+            Utilities.testDateTime = DateTime.newInstance(Utilities.getCurrentDate(), Time.newInstance(9, 0, 0, 0)); //set current time to 9am
+            commonSetup(altMaintenanceConfig()); //set maintenance period to 11pm to 2am the next day
+            validateTestSetup();
+
+            String cronName = Utilities.SCHEDULED_JOB_PREFIX + 'LightningLdv__Email_Recipient__c';
+            list<CronTrigger> scheduledBatch = [SELECT NextFireTime FROM CronTrigger WHERE CronJobDetail.Name = :cronName];
+            System.assert(scheduledBatch.size() == 1, 'There should be 1 LightningLdv batch for the LightningLdv__Email_Recipient__c object scheduled');
+
+            DateTime scheduledTime = scheduledBatch.get(0).NextFireTime;
+            System.assert(scheduledTime >  Utilities.getCurrentDateTime() && scheduledTime <= Utilities.getCurrentDateTime().addMinutes(15), 
+                'The LightningLdv batch should be scheduled some time within the next 15 minutes'
+            );
+        Test.stopTest();
+
+
+    }
+
+
+    //Maintenance period is a few consecutive hours that crosses from one day to the next
+    //Lightning LDV trigger is fired inside the maintenance period
+    private static testMethod void testInsideCrossDayMaintenancePeriod(){
+        Test.startTest();
+            Utilities.testDateTime = DateTime.newInstance(Utilities.getCurrentDate(), Time.newInstance(1, 0, 0, 0)); //set current time to 1am
+            commonSetup(altMaintenanceConfig()); //set maintenance period to 11pm to 2am the next day
+            validateTestSetup();
+
+            String cronName = Utilities.SCHEDULED_JOB_PREFIX + 'LightningLdv__Email_Recipient__c';
+            list<CronTrigger> scheduledBatch = [SELECT NextFireTime FROM CronTrigger WHERE CronJobDetail.Name = :cronName];
+            System.assert(scheduledBatch.size() == 1, 'There should be 1 LightningLdv batch for the LightningLdv__Email_Recipient__c object scheduled');
+
+            DateTime scheduledTime = scheduledBatch.get(0).NextFireTime;
+            System.assert(scheduledTime >= Utilities.getMaintenanceWindowEnd() && scheduledTime <= Utilities.getSoftMaintnanceWindowEnd(), 
+                'The LightningLdv batch should be scheduled shortly after the maintnenace window has ended'
+            );
+        Test.stopTest();
+    }
+
 
      private static void validateDistributionList(String edlName, set<String> expectedValues){
         Email_Distribution_List__c edl = [SELECT Recipients__c FROM Email_Distribution_List__c WHERE Name = :edlName].get(0);

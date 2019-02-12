@@ -29,7 +29,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
     private Object_Trigger_Data__c getObjectTriggerData(String objectApiName){
         Object_Trigger_Data__c returnVal = Object_Trigger_Data__c.getInstance(objectApiName);
         if (returnVal == null){
-            returnVal = new Object_Trigger_Data__c(Name = objectApiName, Last_Run_Time__c = DateTime.now().addHours(-1));
+            returnVal = new Object_Trigger_Data__c(Name = objectApiName, Last_Run_Time__c =  Utilities.getCurrentDateTime().addHours(-1));
             insert returnVal;
         }
         return returnVal;
@@ -65,7 +65,7 @@ public without sharing class TriggerHandlerBatch implements Database.Batchable<s
 
     public Database.QueryLocator start(Database.BatchableContext BC){
         // Track Last Run Time as of start time of batch, but do not update it until the batch succeeds
-        this.nextLastRunTime = DateTime.now();
+        this.nextLastRunTime =  Utilities.getCurrentDateTime();
 
         System.debug('SELECT String: ' + this.selectx);
         System.debug('FROM String: ' + this.fromx);

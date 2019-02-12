@@ -3,11 +3,11 @@
     private static String SALES_LIST = 'Sales Distribution List';
 
     private static Global_Trigger_Settings__c commonConfig(){
-        Date maintenanceDay = Date.Today();
+        Date maintenanceDay = Utilities.getCurrentDate();
         DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(1, 0, 0, 0));
         DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(4, 0, 0, 0));
         
-        Date blackoutDay = Date.Today();
+        Date blackoutDay = Utilities.getCurrentDate();
         DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
         DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
 
@@ -16,11 +16,11 @@
 
 
     private static Global_Trigger_Settings__c altMaintenanceConfig(){ //maintnenance period crosses from one day to the next
-        Date maintenanceDay = Date.Today();
+        Date maintenanceDay = Utilities.getCurrentDate();
         DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(23, 0, 0, 0));
         DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay.addDays(1), Time.newInstance(2, 0, 0, 0));
         
-        Date blackoutDay = Date.Today();
+        Date blackoutDay = Utilities.getCurrentDate();
         DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
         DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
 
@@ -83,6 +83,9 @@
 
 
     private static void validateTestSetup(){
+        Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        System.assert(orgDefaults != NULL, 'Global_Trigger_Settings__c org default should have been inserted');
+
         Integer edlCount = (Integer)[SELECT count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
         System.assertEquals(edlCount,2);
 
@@ -159,11 +162,44 @@
     }
 
 
-    private static testMethod void testSingleDayMaintenancePeriod(){
+    //Maintenance period is a few consecutive hours within the same day
+    //Lightning LDV trigger is fired outside the maintenance period
+    private static testMethod void testOutideSingleDayMaintenancePeriod(){
         Test.startTest();
-            Utilities.testDateTime = DateTime.newInstance(Date.Today(), Time.newInstance(2, 0, 0, 0));
-            commonSetup(commonConfig());
+            Utilities.testDateTime = DateTime.newInstance(Utilities.getCurrentDate(), Time.newInstance(9, 0, 0, 0)); //set current time to 9am
+            commonSetup(commonConfig()); //set maintenance period to 1am to 4am
+            validateTestSetup();
 
+            String cronName = Utilities.SCHEDULED_JOB_PREFIX + 'LightningLdv__Email_Recipient__c';
+            list<CronTrigger> scheduledBatch = [SELECT NextFireTime FROM CronTrigger WHERE CronJobDetail.Name = :cronName];
+            System.assert(scheduledBatch.size() == 1, 'There should be 1 LightningLdv batch for the LightningLdv__Email_Recipient__c object scheduled');
+
+            DateTime scheduledTime = scheduledBatch.get(0).NextFireTime;
+            System.assert(scheduledTime >  Utilities.getCurrentDateTime() && scheduledTime <= Utilities.getCurrentDateTime().addMinutes(15), 
+                'The LightningLdv batch should be scheduled some time within the next 15 minutes'
+            );
+        Test.stopTest();
+
+
+    }
+
+
+    //Maintenance period is a few consecutive hours within the same day
+    //Lightning LDV trigger is fired inside the maintenance period
+    private static testMethod void testInsideSingleDayMaintenancePeriod(){
+        Test.startTest();
+            Utilities.testDateTime = DateTime.newInstance(Utilities.getCurrentDate(), Time.newInstance(2, 0, 0, 0)); //set current time to 2am
+            commonSetup(commonConfig()); //set maintenance period to 1am to 4am
+            validateTestSetup();
+
+            String cronName = Utilities.SCHEDULED_JOB_PREFIX + 'LightningLdv__Email_Recipient__c';
+            list<CronTrigger> scheduledBatch = [SELECT NextFireTime FROM CronTrigger WHERE CronJobDetail.Name = :cronName];
+            System.assert(scheduledBatch.size() == 1, 'There should be 1 LightningLdv batch for the LightningLdv__Email_Recipient__c object scheduled');
+
+            DateTime scheduledTime = scheduledBatch.get(0).NextFireTime;
+            System.assert(scheduledTime >= Utilities.getMaintenanceWindowEnd() && scheduledTime <= Utilities.getSoftMaintnanceWindowEnd(), 
+                'The LightningLdv batch should be scheduled shortly after the maintnenace window has ended'
+            );
         Test.stopTest();
     }
 

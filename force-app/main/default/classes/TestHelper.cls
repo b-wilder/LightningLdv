@@ -83,6 +83,13 @@ public class TestHelper {
 
 
     public static void validateTestSetup(){
+        System.debug('Utilities.getCurrentDate(): ' + Utilities.getCurrentDate().format());
+        System.debug('Utilities.getCurrentDateTime(): ' + Utilities.getCurrentDateTime().format());
+        System.debug('Utilities.getMaintenanceWindowStart(): ' + Utilities.getMaintenanceWindowStart().format());
+        System.debug('Utilities.getMaintenanceWindowEnd(): ' + Utilities.getMaintenanceWindowEnd().format());
+        System.debug('Utilities.getSoftMaintnanceWindowEnd(): ' + Utilities.getSoftMaintnanceWindowEnd().format());
+
+
         Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
         System.assert(orgDefaults != NULL, 'Global_Trigger_Settings__c org default should have been inserted');
 

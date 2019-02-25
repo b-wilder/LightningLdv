@@ -90,11 +90,9 @@ public class TestHelper {
         System.debug('Utilities.getSoftMaintnanceWindowEnd(): ' + Utilities.getSoftMaintnanceWindowEnd().format());
         
         Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        System.assert(orgDefaults != NULL, 'Global_Trigger_Settings__c org default should have been inserted');
         System.debug('blackout period start: ' + orgDefaults.Blackout_Period_Start__c.format());
         System.debug('blackout period end: ' + orgDefaults.Blackout_Period_End__c.format());
-
-
-        System.assert(orgDefaults != NULL, 'Global_Trigger_Settings__c org default should have been inserted');
 
         Integer edlCount = (Integer)[SELECT count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');
         System.assertEquals(edlCount,2);

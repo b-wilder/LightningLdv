@@ -88,6 +88,10 @@ public class TestHelper {
         System.debug('Utilities.getMaintenanceWindowStart(): ' + Utilities.getMaintenanceWindowStart().format());
         System.debug('Utilities.getMaintenanceWindowEnd(): ' + Utilities.getMaintenanceWindowEnd().format());
         System.debug('Utilities.getSoftMaintnanceWindowEnd(): ' + Utilities.getSoftMaintnanceWindowEnd().format());
+        
+        Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        System.debug('blackout period start: ' + orgDefaults.Blackout_Period_Start__c.format());
+        System.debug('blackout period end: ' + orgDefaults.Blackout_Period_End__c.format());
 
 
         Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();

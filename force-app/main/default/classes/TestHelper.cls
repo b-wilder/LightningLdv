@@ -94,7 +94,6 @@ public class TestHelper {
         System.debug('blackout period end: ' + orgDefaults.Blackout_Period_End__c.format());
 
 
-        Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
         System.assert(orgDefaults != NULL, 'Global_Trigger_Settings__c org default should have been inserted');
 
         Integer edlCount = (Integer)[SELECT count(Id) countVal FROM Email_Distribution_List__c].get(0).get('countVal');

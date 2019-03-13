@@ -4,6 +4,7 @@ public with sharing class Utilities {
     public static Date maintenanceWindowEndDay;
     public static DateTime maintenanceWindowEnd;
     public static DateTime softMaintenanceWindowEnd;
+    public static DateTime softBlackoutPeriodEnd;
 
     public static DateTime testDateTime;
 
@@ -82,5 +83,21 @@ public with sharing class Utilities {
             softMaintenanceWindowEnd = getMaintenanceWindowEnd().addMinutes(batchOffsetMinutes);
         }
         return softMaintenanceWindowEnd;
+    }
+
+    public static DateTime getSoftBlackoutPeriodEnd(){
+        Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
+        DateTime nowDT = getCurrentDateTime();
+        if( softBlackoutPeriodEnd == NULL &&
+            orgDefaults.Blackout_Period_Start__c != NULL &&
+            orgDefaults.Blackout_Period_End__c != NULL &&
+            nowDT >= orgDefaults.Blackout_Period_Start__c &&
+            nowDT <= orgDefaults.Blackout_Period_End__c
+        ){
+            Integer numberOfLightningLdvTriggers = [SELECT DeveloperName FROM Object_Trigger_Settings__mdt].size();
+            Integer batchOffsetMinutes = numberOfLightningLdvTriggers * 5;
+            softBlackoutPeriodEnd = orgDefaults.Blackout_Period_End__c.addMinutes(batchOffsetMinutes);
+        }
+        return softBlackoutPeriodEnd;
     }
 }

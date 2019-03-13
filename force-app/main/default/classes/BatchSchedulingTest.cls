@@ -128,8 +128,8 @@
             System.assertEquals(expectedBlackoutEnd, orgDefaults.Blackout_Period_End__c, 'Blackout period should end at 3pm today');
 
             DateTime scheduledTime = scheduledBatch.get(0).NextFireTime;
-            System.assert(scheduledTime > orgDefaults.Blackout_Period_End__c.addMinutes(10) && scheduledTime <= orgDefaults.Blackout_Period_End__c.addMinutes(15), 
-                'The LightningLdv batch should be scheduled 15 minutes after the blackout period has ended'
+            System.assert(scheduledTime > orgDefaults.Blackout_Period_End__c && scheduledTime <= Utilities.getSoftBlackoutPeriodEnd(), 
+                'The LightningLdv batch should be scheduled shortly after the blackout period has ended'
             );
         Test.stopTest();
     }

@@ -133,4 +133,12 @@
             );
         Test.stopTest();
     }
+
+    private static testMethod void testBlackoutMaintenanceOverlap(){
+        //!!blackout period end or soft end runs into maintenance window
+    }
+
+    private static testMethod void testMaintenanceBlackoutOverlap(){
+        //!!maintenance window soft end runs into blackout period
+    }
 }

@@ -5,6 +5,9 @@ public with sharing class Utilities {
     public static DateTime maintenanceWindowEnd;
     public static DateTime softMaintenanceWindowEnd;
     public static DateTime softBlackoutPeriodEnd;
+    public static boolean isLightningLdvExecution;
+    public static set<String> objectsTriggeredInThisContext;
+    //!!add booleans for isInMaintenanceWindow and isInBlackoutWindow
 
     public static DateTime testDateTime;
 
@@ -99,5 +102,24 @@ public with sharing class Utilities {
             softBlackoutPeriodEnd = orgDefaults.Blackout_Period_End__c.addMinutes(batchOffsetMinutes);
         }
         return softBlackoutPeriodEnd;
+    }
+
+    public static boolean getIsLightningLdvExecution(){
+        if(isLightningLdvExecution == NULL){
+            isLightningLdvExecution = false;
+        }
+        return isLightningLdvExecution;
+    }
+
+    public static set<String> getObjectsTriggeredInThisContext(){
+        if(objectsTriggeredInThisContext == NULL){
+            objectsTriggeredInThisContext = new set<String>();
+        }
+        return objectsTriggeredInThisContext;
+    }
+
+    public static String getCronName(Map<Id,SObject> recordMap){
+        String objectType = String.valueOf(recordMap.getSObjectType());
+        return SCHEDULED_JOB_PREFIX + objectType;
     }
 }

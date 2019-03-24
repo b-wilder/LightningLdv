@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Trigger_Delay__c</fullName>
+    <description>Amount of time after DML occurs before Lightning LDV triggers should be executed. If the delay is 0 it will happen synchronously. If the delay is greater than 0, it will be scheduled for asynchronous execution.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Amount of time after DML occurs before Lightning LDV triggers should be executed. If the delay is 0 it will happen synchronously. If the delay is greater than 0, it will be scheduled for asynchronous execution.</inlineHelpText>
+    <label>Trigger_Delay</label>
+    <precision>3</precision>
+    <required>true</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

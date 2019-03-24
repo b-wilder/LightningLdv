@@ -11,7 +11,7 @@ public class TestHelper {
         DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
         DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
 
-        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime);
+        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime, 15);
     }
 
 
@@ -24,19 +24,33 @@ public class TestHelper {
         DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(13, 0, 0, 0));
         DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(15, 0, 0, 0));
 
-        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime);
+        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime, 15);
+    }
+
+    public static Global_Trigger_Settings__c instantExecutionConfig(){
+        Date maintenanceDay = Utilities.getCurrentDate();
+        DateTime maintenanceStartDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(1, 0, 0, 0));
+        DateTime maintenanceEndDateTime = DateTime.newInstance(maintenanceDay, Time.newInstance(2, 0, 0, 0));
+        
+        Date blackoutDay = Utilities.getCurrentDate();
+        DateTime blackoutStartDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(5, 0, 0, 0));
+        DateTime blackoutEndDateTime = DateTime.newInstance(blackoutDay, Time.newInstance(6, 0, 0, 0));
+
+        return getGlobalTriggerSettings(maintenanceStartDateTime, maintenanceEndDateTime, blackoutStartDateTime, blackoutEndDateTime, 0);
     }
     
 
     public static Global_Trigger_Settings__c getGlobalTriggerSettings(
         DateTime maintenanceStartDateTime, DateTime maintenanceEndDateTime,
-        DateTime blackoutStartDateTime, DateTime blackoutEndDateTime
+        DateTime blackoutStartDateTime, DateTime blackoutEndDateTime,
+        Integer triggerDelay
     ) {
         Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
         orgDefaults.Maintenance_Window_Start__c = maintenanceStartDateTime;
         orgDefaults.Maintenance_Window_End__c = maintenanceEndDateTime;
         orgDefaults.Blackout_Period_Start__c = blackoutStartDateTime;
         orgDefaults.Blackout_Period_End__c = blackoutEndDateTime;
+        orgDefaults.Trigger_Delay__c = triggerDelay;
         return orgDefaults;
     }
 

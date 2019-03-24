@@ -134,11 +134,28 @@
         Test.stopTest();
     }
 
-    private static testMethod void testBlackoutMaintenanceOverlap(){
-        //!!blackout period end or soft end runs into maintenance window
+    //Lightning LDV trigger is fired instantly rather than in batch mode
+    private static testMethod void testInstantExecutionConfig(){
+         Test.startTest();
+            System.debug('testInstantExecutionConfig');
+            Utilities.testDateTime = DateTime.newInstance(Date.Today(), Time.newInstance(9, 0, 0, 0)); //set current time to 9am
+            TestHelper.commonSetup(TestHelper.instantExecutionConfig()); //set trigger to execute instantly. Maintenance period is 1 to 2am and blackout is 5 to 6am.
+            TestHelper.validateTestSetup();
+
+            DateTime expectedMaintenanceStart = DateTime.newInstance(Date.Today(), Time.newInstance(1, 0, 0, 0));
+            System.assertEquals(expectedMaintenanceStart, Utilities.getMaintenanceWindowStart(), 'Maintenance window should start at 1AM today');
+
+            DateTime expectedMaintenanceEnd = DateTime.newInstance(Date.Today(), Time.newInstance(2, 0, 0, 0));
+            System.assertEquals(expectedMaintenanceEnd, Utilities.getMaintenanceWindowEnd(), 'Maintenance window should end at 2AM today');
+
+            String cronName = Utilities.SCHEDULED_JOB_PREFIX + 'LightningLdv__Email_Recipient__c';
+            list<CronTrigger> scheduledBatch = [SELECT NextFireTime FROM CronTrigger WHERE CronJobDetail.Name = :cronName];
+            System.assert(scheduledBatch.isEmpty(), 'The trigger for LightningLdv__Email_Recipient__c should execute instantly, so no batch should be scheduled.');
+
+            //Validation occurs before Test.stopTest to ensure that execution is synchronous.
+            TestHelper.validateDistributionList(TestHelper.MARKETING_LIST, new set<String>{'MarketingRecipient1@test.com','MarketingRecipient2@test.com','MarketingRecipient3@test.com'});
+            TestHelper.validateDistributionList(TestHelper.SALES_LIST, new set<String>{'SalesRecipient1@test.com','SalesRecipient2@test.com','SalesRecipient3@test.com'});
+        Test.stopTest();
     }
 
-    private static testMethod void testMaintenanceBlackoutOverlap(){
-        //!!maintenance window soft end runs into blackout period
-    }
 }

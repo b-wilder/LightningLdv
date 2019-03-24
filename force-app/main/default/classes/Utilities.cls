@@ -122,4 +122,8 @@ public with sharing class Utilities {
         String objectType = String.valueOf(recordMap.getSObjectType());
         return SCHEDULED_JOB_PREFIX + objectType;
     }
+
+    public static String getCronName(String objectType){
+        return SCHEDULED_JOB_PREFIX + objectType;
+    }
 }

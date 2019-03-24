@@ -7,6 +7,7 @@ public with sharing class GenericTriggerHandler {
 
     //Schedule batch methods
     public void onAfterDML(map<Id,sObject> recordMap){
+        //Gather required information
         Global_Trigger_Settings__c orgDefaults = Global_Trigger_Settings__c.getOrgDefaults();
         String objectType = String.valueOf(recordMap.getSObjectType());
         String cronName = Utilities.getCronName(objectType);
@@ -20,6 +21,7 @@ public with sharing class GenericTriggerHandler {
             thisObjectsTriggerSettings = objectTriggerSettings[0];
         }
         
+        //Execute or schedule trigger logic if context is valid
         if(isValidExecution(orgDefaults, objectType, thisObjectsTriggerSettings)){
             if( Utilities.isLightningLdvExecution || orgDefaults.Trigger_Delay__c <= 0 ){ //!!run synchronously because this is already a lightning ldv batch execution or because trigger delay was set to 0
 
